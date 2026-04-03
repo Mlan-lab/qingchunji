@@ -299,6 +299,28 @@
         .sync-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
         .btn-export { background-color: #2196F3; color: white; flex: 1; min-width: 120px; }
         .btn-import { background-color: #FF9800; color: white; flex: 1; min-width: 120px; }
+        .music-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        .music-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .music-toggle.playing {
+            background: rgba(78,205,196,0.8);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
         
         /* 自动补全下拉框 */
         .autocomplete-container { position: relative; }
@@ -478,6 +500,7 @@
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
                 <button class="sakura-toggle" onclick="toggleSakura()">🌸</button>
+                <button class="music-toggle" onclick="toggleMusic()" id="musicToggle">🎵</button>
             </div>
             <h1>青春纪</h1>
             <p class="subtitle">记录青春，收藏美好</p>
@@ -571,14 +594,22 @@
         </div>
     </div>
     
+    <audio id="backgroundMusic" loop volume="0.3">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
     <script>
         let animes = JSON.parse(localStorage.getItem('animes')) || [];
         let currentCategory = 'all';
         let currentSort = 'score';
         let rankingExpanded = false;
         let sakuraEnabled = true;
+        let musicEnabled = false;
         let debounceTimer = null;
         let bangumiCache = {};
+        
+        const audio = document.getElementById('backgroundMusic');
         
         function saveAnimes() {
             localStorage.setItem('animes', JSON.stringify(animes));
@@ -1013,6 +1044,23 @@
         }
         
         // 樱花特效
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            const btn = document.getElementById('musicToggle');
+            
+            if (musicEnabled) {
+                audio.play().catch(e => console.log('音乐播放需要用户交互'));
+                btn.classList.add('playing');
+                btn.textContent = '🔊';
+            } else {
+                audio.pause();
+                btn.classList.remove('playing');
+                btn.textContent = '🎵';
+            }
+            
+            localStorage.setItem('musicEnabled', musicEnabled);
+        }
+        
         function toggleSakura() {
             sakuraEnabled = !sakuraEnabled;
             document.querySelector('.sakura-toggle').textContent = sakuraEnabled ? '🌸' : '✖️';
@@ -1099,6 +1147,15 @@
             document.body.dataset.theme = 'dark';
             document.querySelector('.theme-toggle').textContent = '☀️';
         }
+        
+        if (localStorage.getItem('musicEnabled') === 'true') {
+            musicEnabled = true;
+            const btn = document.getElementById('musicToggle');
+            btn.classList.add('playing');
+            btn.textContent = '🔊';
+            // 音乐播放需要用户交互，所以不自动播放
+        }
+        
         updateStats();
         renderRanking();
         renderAnimes();
