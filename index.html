@@ -594,8 +594,8 @@
         </div>
     </div>
     
-    <audio id="backgroundMusic" loop volume="0.3">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    <audio id="backgroundMusic" loop volume="0.2">
+        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Royal_Free_Music/Royal_Free_Music_Vol_2/Royal_Free_Music_-_01_-_Spring_Memories.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
     
@@ -1049,9 +1049,15 @@
             const btn = document.getElementById('musicToggle');
             
             if (musicEnabled) {
-                audio.play().catch(e => console.log('音乐播放需要用户交互'));
-                btn.classList.add('playing');
-                btn.textContent = '🔊';
+                audio.currentTime = 0; // 重置音乐到开始
+                audio.loop = true; // 确保循环开启
+                audio.play().then(() => {
+                    btn.classList.add('playing');
+                    btn.textContent = '🔊';
+                }).catch(e => {
+                    console.log('音乐播放需要用户交互，点击按钮开始播放');
+                    musicEnabled = false; // 重置状态
+                });
             } else {
                 audio.pause();
                 btn.classList.remove('playing');
@@ -1060,6 +1066,14 @@
             
             localStorage.setItem('musicEnabled', musicEnabled);
         }
+        
+        // 监听音乐结束事件，确保循环可靠
+        audio.addEventListener('ended', function() {
+            if (musicEnabled) {
+                this.currentTime = 0;
+                this.play();
+            }
+        });
         
         function toggleSakura() {
             sakuraEnabled = !sakuraEnabled;
