@@ -322,6 +322,251 @@
             100% { transform: scale(1); }
         }
         
+        /* 轮盘精灵组件 */
+        .roulette-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .roulette-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .roulette-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .roulette-button:active {
+            transform: scale(0.95);
+        }
+        
+        .roulette-wheel {
+            position: absolute;
+            bottom: 100px;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f9f5ff, #e8f5e8);
+            border: 4px solid #ff6b6b;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            pointer-events: auto;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        [data-theme="dark"] .roulette-wheel {
+            background: linear-gradient(135deg, #16213e, #1a1a2e);
+            border-color: #4ecdc4;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .roulette-wheel.show {
+            display: block;
+        }
+        
+        .wheel-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        .wheel-arrow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid #ff6b6b;
+            z-index: 10;
+        }
+        
+        .roulette-result {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 200px;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+        .roulette-result.show {
+            display: block;
+        }
+        
+        .roulette-history {
+            position: absolute;
+            bottom: 100px;
+            left: -250px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            width: 230px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideInLeft 0.3s ease;
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .roulette-history.show {
+            display: block;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .history-title {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .history-close {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-date {
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 2px;
+        }
+        
+        .roulette-controls {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .roulette-container {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .roulette-button {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5em;
+            }
+            
+            .roulette-wheel {
+                width: 250px;
+                height: 250px;
+                bottom: 80px;
+            }
+            
+            .roulette-history {
+                left: -200px;
+                width: 180px;
+            }
+        }
+        
         /* 自动补全下拉框 */
         .autocomplete-container { position: relative; }
         .autocomplete-list {
@@ -599,6 +844,27 @@
         Your browser does not support the audio element.
     </audio>
     
+    <!-- 轮盘精灵组件 -->
+    <div class="roulette-container">
+        <button class="roulette-button" onclick="toggleRoulette()">🎰</button>
+        <div class="roulette-wheel" id="rouletteWheel">
+            <div class="wheel-arrow"></div>
+            <div class="wheel-inner" id="wheelInner"></div>
+            <div class="roulette-result" id="rouletteResult"></div>
+            <div class="roulette-controls">
+                <button class="control-btn" onclick="spinRoulette()">开始转动</button>
+                <button class="control-btn" onclick="showHistory()">历史记录</button>
+            </div>
+        </div>
+        <div class="roulette-history" id="rouletteHistory">
+            <div class="history-header">
+                <div class="history-title">推荐历史</div>
+                <button class="history-close" onclick="hideHistory()">&times;</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </div>
+    
     <script>
         let animes = JSON.parse(localStorage.getItem('animes')) || [];
         let currentCategory = 'all';
@@ -608,13 +874,37 @@
         let musicEnabled = false;
         let debounceTimer = null;
         let bangumiCache = {};
+        let rouletteVisible = false;
+        let isSpinning = false;
         
         const audio = document.getElementById('backgroundMusic');
+        const rouletteWheel = document.getElementById('rouletteWheel');
+        const rouletteResult = document.getElementById('rouletteResult');
+        const rouletteHistory = document.getElementById('rouletteHistory');
+        const wheelInner = document.getElementById('wheelInner');
+        const historyList = document.getElementById('historyList');
+        
+        // 轮盘颜色
+        const wheelColors = [
+            '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+            '#ffeaa7', '#dfe6e9', '#e17055', '#00b894'
+        ];
+        
+        // 历史记录
+        let rouletteHistoryData = JSON.parse(localStorage.getItem('rouletteHistory')) || [];
+        
+        function saveRouletteHistory() {
+            localStorage.setItem('rouletteHistory', JSON.stringify(rouletteHistoryData));
+        }
         
         function saveAnimes() {
             localStorage.setItem('animes', JSON.stringify(animes));
             updateStats();
             renderRanking();
+            // 同步更新轮盘
+            if (rouletteVisible) {
+                renderRoulette();
+            }
         }
         
         function updateStats() {
@@ -1044,6 +1334,162 @@
         }
         
         // 樱花特效
+        // 轮盘精灵功能
+        function toggleRoulette() {
+            rouletteVisible = !rouletteVisible;
+            if (rouletteVisible) {
+                rouletteWheel.classList.add('show');
+                renderRoulette();
+                // 播放转转声音
+                playRouletteSound('转转~');
+            } else {
+                rouletteWheel.classList.remove('show');
+                hideHistory();
+            }
+        }
+        
+        function renderRoulette() {
+            if (animes.length === 0) {
+                wheelInner.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 14px; text-align: center; padding: 20px;">暂无动漫数据<br>请先添加动漫</div>';
+                return;
+            }
+            
+            wheelInner.innerHTML = '';
+            const segmentCount = Math.min(animes.length, 8);
+            const anglePerSegment = 360 / segmentCount;
+            
+            for (let i = 0; i < segmentCount; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'wheel-segment';
+                
+                const angle = i * anglePerSegment;
+                segment.style.transform = `rotate(${angle}deg) skewY(${90 - anglePerSegment}deg)`;
+                segment.style.backgroundColor = wheelColors[i % wheelColors.length];
+                segment.style.color = '#fff';
+                
+                const anime = animes[i];
+                segment.textContent = anime.name.length > 10 ? anime.name.substring(0, 10) + '...' : anime.name;
+                
+                wheelInner.appendChild(segment);
+            }
+        }
+        
+        function spinRoulette() {
+            if (isSpinning || animes.length === 0) return;
+            
+            isSpinning = true;
+            playRouletteSound('开始转动~');
+            
+            const segmentCount = Math.min(animes.length, 8);
+            const anglePerSegment = 360 / segmentCount;
+            
+            // 随机角度（至少转3圈）
+            const randomAngle = 360 * 3 + Math.random() * 360;
+            const finalAngle = randomAngle % 360;
+            
+            // 计算最终指向的动漫
+            const selectedIndex = Math.floor((360 - finalAngle) / anglePerSegment) % segmentCount;
+            const selectedAnime = animes[selectedIndex];
+            
+            // 动画效果
+            let currentAngle = 0;
+            let speed = 10;
+            const acceleration = 0.5;
+            const decelerationStart = 2000;
+            
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                
+                if (elapsed < decelerationStart) {
+                    // 加速阶段
+                    speed += acceleration;
+                } else {
+                    // 减速阶段
+                    speed = Math.max(0.5, speed - acceleration * 1.5);
+                }
+                
+                currentAngle += speed;
+                wheelInner.style.transform = `rotate(${currentAngle}deg)`;
+                
+                if (currentAngle < randomAngle) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 停止转动
+                    wheelInner.style.transform = `rotate(${randomAngle}deg)`;
+                    isSpinning = false;
+                    showRouletteResult(selectedAnime);
+                }
+            }
+            
+            animate();
+        }
+        
+        function showRouletteResult(anime) {
+            rouletteResult.textContent = `推荐：${anime.name}`;
+            rouletteResult.classList.add('show');
+            playRouletteSound(`推荐${anime.name}~`);
+            
+            // 记录历史
+            addToHistory(anime);
+            
+            setTimeout(() => {
+                rouletteResult.classList.remove('show');
+            }, 3000);
+        }
+        
+        function addToHistory(anime) {
+            const historyItem = {
+                name: anime.name,
+                date: new Date().toLocaleString(),
+                time: Date.now()
+            };
+            
+            rouletteHistoryData.unshift(historyItem);
+            if (rouletteHistoryData.length > 20) {
+                rouletteHistoryData = rouletteHistoryData.slice(0, 20);
+            }
+            
+            saveRouletteHistory();
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            if (rouletteHistoryData.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">暂无历史记录</div>';
+                return;
+            }
+            
+            historyList.innerHTML = rouletteHistoryData.map(item => `
+                <div class="history-item">
+                    ${item.name}
+                    <div class="history-date">${item.date}</div>
+                </div>
+            `).join('');
+        }
+        
+        function showHistory() {
+            rouletteHistory.classList.add('show');
+            renderHistory();
+        }
+        
+        function hideHistory() {
+            rouletteHistory.classList.remove('show');
+        }
+        
+        function playRouletteSound(text) {
+            // 使用Web Speech API播放语音
+            if ('speechSynthesis' in window) {
+                const speech = new SpeechSynthesisUtterance(text);
+                speech.lang = 'zh-CN';
+                speech.rate = 1.2;
+                speech.pitch = 1.1;
+                speech.volume = 0.6;
+                speechSynthesis.speak(speech);
+            }
+        }
+        
         function toggleMusic() {
             musicEnabled = !musicEnabled;
             const btn = document.getElementById('musicToggle');
