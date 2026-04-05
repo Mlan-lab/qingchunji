@@ -2171,12 +2171,17 @@
         
         // 导出/导入
         function exportData() {
-            const dataStr = JSON.stringify(animes, null, 2);
+            const data = {
+                animes: animes,
+                characters: characters,
+                exportDate: new Date().toISOString()
+            };
+            const dataStr = JSON.stringify(data, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `青春纪动漫数据_${new Date().toISOString().split('T')[0]}.json`;
+            link.download = `青春纪数据_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
             URL.revokeObjectURL(url);
             showMessage('数据导出成功！');
@@ -2189,9 +2194,13 @@
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (Array.isArray(data)) {
+                    if (data.animes) {
                         if (confirm('导入数据将覆盖当前所有数据，确定要继续吗？')) {
-                            animes = data;
+                            animes = data.animes;
+                            if (data.characters) {
+                                characters = data.characters;
+                                saveCharacters();
+                            }
                             saveAnimes();
                             renderAnimes();
                             showMessage('数据导入成功！');
