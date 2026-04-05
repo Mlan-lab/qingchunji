@@ -458,6 +458,147 @@
             color: #999;
         }
         
+        /* 导入导出按钮 */
+        .import-export-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-import, .btn-export {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-import {
+            background: #4ecdc4;
+            color: white;
+        }
+        
+        .btn-export {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-import:hover, .btn-export:hover {
+            opacity: 0.9;
+        }
+        
+        /* 删除按钮 */
+        .delete-btn {
+            background: rgba(255, 107, 107, 0.2) !important;
+            border: 1px solid #ff6b6b !important;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(255, 107, 107, 0.3) !important;
+        }
+        
+        /* 视频部分 */
+        .video-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .video-upload {
+            margin-top: 10px;
+        }
+        
+        .video-upload button {
+            padding: 8px 16px;
+            background: var(--header-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .video-upload button:hover {
+            opacity: 0.9;
+        }
+        
+        /* 导入模态框 */
+        .import-methods {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .import-method {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        
+        .import-method h4 {
+            margin-bottom: 15px;
+        }
+        
+        .import-method input[type="file"] {
+            margin-bottom: 10px;
+        }
+        
+        .import-method button {
+            padding: 8px 16px;
+            background: var(--header-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .import-method button:hover {
+            opacity: 0.9;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn-primary {
+            padding: 10px 20px;
+            background: var(--header-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
         .anime-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1128,6 +1269,10 @@
                         <option value="反派">反派</option>
                     </select>
                 </div>
+                <div class="import-export-box">
+                    <button class="btn btn-import" onclick="openImportModal()">导入角色</button>
+                    <button class="btn btn-export" onclick="exportCharacters()">导出角色</button>
+                </div>
             </div>
             
             <div class="character-grid" id="character-grid">
@@ -1149,6 +1294,7 @@
                                     <button class="action-btn like-btn" onclick="toggleLike()"><span id="modal-likes">0</span> ❤️</button>
                                     <button class="action-btn favorite-btn" onclick="toggleFavorite()"><span id="modal-favorites">0</span> ⭐</button>
                                     <button class="action-btn share-btn" onclick="shareCharacter()">📤 分享</button>
+                                    <button class="action-btn delete-btn" onclick="deleteCharacter()">🗑️ 删除</button>
                                 </div>
                             </div>
                             <img src="" alt="角色头像" class="character-avatar" id="modal-avatar">
@@ -1163,6 +1309,66 @@
                             <div class="comments-list" id="modal-comments">
                                 <!-- 评论将通过JavaScript动态生成 -->
                             </div>
+                        </div>
+                        <!-- 视频部分 -->
+                        <div class="video-section">
+                            <h4>角色视频</h4>
+                            <div id="modal-videos">
+                                <!-- 视频将通过JavaScript动态生成 -->
+                            </div>
+                            <div class="video-upload">
+                                <input type="file" id="video-upload" accept="video/*" style="display: none;">
+                                <button onclick="document.getElementById('video-upload').click()">上传视频</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 导入角色模态框 -->
+            <div class="character-modal" id="import-modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeImportModal()">&times;</span>
+                    <h3>导入角色</h3>
+                    <div class="import-methods">
+                        <div class="import-method">
+                            <h4>通过文件导入</h4>
+                            <input type="file" id="character-import-file" accept=".json">
+                            <button onclick="importCharactersFromFile()">导入文件</button>
+                        </div>
+                        <div class="import-method">
+                            <h4>手动添加角色</h4>
+                            <form id="add-character-form">
+                                <div class="form-group">
+                                    <label for="new-character-name">角色名称</label>
+                                    <input type="text" id="new-character-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-character-series">作品</label>
+                                    <input type="text" id="new-character-series" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-character-type">类型</label>
+                                    <select id="new-character-type" required>
+                                        <option value="主角">主角</option>
+                                        <option value="配角">配角</option>
+                                        <option value="反派">反派</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-character-image">头像图片</label>
+                                    <input type="text" id="new-character-image" placeholder="输入图片URL">
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-character-bg">封面图片</label>
+                                    <input type="text" id="new-character-bg" placeholder="输入图片URL">
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-character-description">简介</label>
+                                    <textarea id="new-character-description" placeholder="添加简介..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">添加角色</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -1476,10 +1682,206 @@
         // 点击模态框外部关闭
         window.onclick = function(event) {
             const modal = document.getElementById('character-modal');
+            const importModal = document.getElementById('import-modal');
             if (event.target == modal) {
                 closeCharacterModal();
+            } else if (event.target == importModal) {
+                closeImportModal();
             }
         }
+        
+        // 打开导入模态框
+        function openImportModal() {
+            document.getElementById('import-modal').style.display = 'block';
+        }
+        
+        // 关闭导入模态框
+        function closeImportModal() {
+            document.getElementById('import-modal').style.display = 'none';
+        }
+        
+        // 从文件导入角色
+        function importCharactersFromFile() {
+            const fileInput = document.getElementById('character-import-file');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedCharacters = JSON.parse(e.target.result);
+                        if (Array.isArray(importedCharacters)) {
+                            characters = [...characters, ...importedCharacters];
+                            saveCharacters();
+                            renderCharacters();
+                            closeImportModal();
+                            alert('角色导入成功！');
+                        } else {
+                            alert('文件格式错误，需要包含角色数组');
+                        }
+                    } catch (error) {
+                        alert('文件解析错误：' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                alert('请选择一个JSON文件');
+            }
+        }
+        
+        // 导出角色数据
+        function exportCharacters() {
+            const dataStr = JSON.stringify(characters, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `角色墙数据_${new Date().toLocaleDateString()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // 删除角色
+        function deleteCharacter() {
+            if (currentCharacter && confirm('确定要删除这个角色吗？')) {
+                characters = characters.filter(character => character.id !== currentCharacter.id);
+                saveCharacters();
+                closeCharacterModal();
+                renderCharacters();
+                alert('角色删除成功！');
+            }
+        }
+        
+        // 手动添加角色
+        document.getElementById('add-character-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newCharacter = {
+                id: Date.now(),
+                name: document.getElementById('new-character-name').value,
+                series: document.getElementById('new-character-series').value,
+                type: document.getElementById('new-character-type').value,
+                image: document.getElementById('new-character-image').value || 'https://img.freepik.com/free-vector/cute-anime-girl-with-long-hair_23-2149855066.jpg',
+                bgImage: document.getElementById('new-character-bg').value || 'https://img.freepik.com/free-vector/fantasy-landscape-with-mountains_23-2149847652.jpg',
+                description: document.getElementById('new-character-description').value || '暂无简介',
+                likes: 0,
+                comments: [],
+                favorites: 0,
+                videos: [],
+                addedAt: new Date().toISOString().split('T')[0]
+            };
+            
+            characters.push(newCharacter);
+            saveCharacters();
+            renderCharacters();
+            closeImportModal();
+            alert('角色添加成功！');
+            
+            // 清空表单
+            this.reset();
+        });
+        
+        // 视频上传功能
+        document.getElementById('video-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && currentCharacter) {
+                // 在实际应用中，这里应该上传视频到服务器
+                // 这里我们只是模拟视频上传
+                const videoUrl = URL.createObjectURL(file);
+                
+                if (!currentCharacter.videos) {
+                    currentCharacter.videos = [];
+                }
+                
+                currentCharacter.videos.push({
+                    id: Date.now(),
+                    url: videoUrl,
+                    name: file.name,
+                    addedAt: new Date().toLocaleString('zh-CN')
+                });
+                
+                saveCharacters();
+                renderCharacterVideos();
+                alert('视频上传成功！');
+            }
+        });
+        
+        // 渲染角色视频
+        function renderCharacterVideos() {
+            const videosContainer = document.getElementById('modal-videos');
+            videosContainer.innerHTML = '';
+            
+            if (currentCharacter && currentCharacter.videos && currentCharacter.videos.length > 0) {
+                currentCharacter.videos.forEach(video => {
+                    const videoElement = document.createElement('div');
+                    videoElement.className = 'video-item';
+                    videoElement.innerHTML = `
+                        <video src="${video.url}" controls style="width: 100%; max-height: 300px; object-fit: contain;"></video>
+                        <p style="margin-top: 5px; font-size: 0.9em;">${video.name}</p>
+                        <p style="font-size: 0.8em; color: #999;">${video.addedAt}</p>
+                    `;
+                    videosContainer.appendChild(videoElement);
+                });
+            } else {
+                videosContainer.innerHTML = '<p>暂无视频</p>';
+            }
+        }
+        
+        // 修复打开角色详情模态框时渲染视频
+        function openCharacterModal(character) {
+            currentCharacter = character;
+            const modal = document.getElementById('character-modal');
+            
+            // 填充模态框数据
+            document.getElementById('modal-name').textContent = character.name;
+            document.getElementById('modal-series').textContent = `作品: ${character.series}`;
+            document.getElementById('modal-type').textContent = `类型: ${character.type}`;
+            document.getElementById('modal-likes').textContent = character.likes;
+            document.getElementById('modal-favorites').textContent = character.favorites;
+            document.getElementById('modal-description').textContent = character.description;
+            document.getElementById('modal-bg').src = character.bgImage;
+            document.getElementById('modal-avatar').src = character.image;
+            
+            // 渲染评论
+            const commentsList = document.getElementById('modal-comments');
+            commentsList.innerHTML = '';
+            character.comments.forEach(comment => {
+                const commentItem = document.createElement('div');
+                commentItem.className = 'comment-item';
+                commentItem.innerHTML = `
+                    <div class="comment-user">${comment.user}</div>
+                    <div class="comment-text">${comment.text}</div>
+                    <div class="comment-time">${comment.time}</div>
+                `;
+                commentsList.appendChild(commentItem);
+            });
+            
+            // 渲染视频
+            renderCharacterVideos();
+            
+            modal.style.display = 'block';
+        }
+        
+        // 修复转转小精灵历史记录关闭按钮
+        function hideHistory() {
+            document.getElementById('rouletteHistory').classList.remove('show');
+        }
+        
+        // 初始化
+        function init() {
+            // 确保角色数据结构完整
+            characters.forEach(character => {
+                if (!character.videos) {
+                    character.videos = [];
+                }
+            });
+            saveCharacters();
+            
+            // 初始化显示
+            showSection('main');
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = init;
         let rankingExpanded = false;
         let sakuraEnabled = true;
         let musicEnabled = false;
