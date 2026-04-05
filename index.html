@@ -426,22 +426,24 @@
         
         .roulette-result {
             position: absolute;
-            bottom: -60px;
+            top: -60px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
             color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 25px;
             font-weight: bold;
             text-align: center;
             min-width: 200px;
             display: none;
-            animation: slideUp 0.3s ease;
+            animation: slideDown 0.5s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 20;
         }
         
-        @keyframes slideUp {
-            from { opacity: 0; transform: translate(-50%, 20px); }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -20px); }
             to { opacity: 1; transform: translate(-50%, 0); }
         }
         
@@ -1391,29 +1393,30 @@
             const selectedIndex = Math.floor((360 - finalAngle) / anglePerSegment) % segmentCount;
             const selectedAnime = animes[selectedIndex];
             
-            // 动画效果
+            // 动画效果 - 精确控制在5秒
             let currentAngle = 0;
-            let speed = 10;
-            const acceleration = 0.5;
-            const decelerationStart = 2000;
-            
+            const totalDuration = 5000; // 5秒
             const startTime = Date.now();
             
             function animate() {
                 const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / totalDuration, 1);
                 
-                if (elapsed < decelerationStart) {
-                    // 加速阶段
-                    speed += acceleration;
+                // 缓动函数：先加速后减速
+                let easeProgress;
+                if (progress < 0.5) {
+                    // 前半段加速
+                    easeProgress = 2 * progress * progress;
                 } else {
-                    // 减速阶段
-                    speed = Math.max(0.5, speed - acceleration * 1.5);
+                    // 后半段减速
+                    easeProgress = 1 - Math.pow(-2 * progress + 2, 2) / 2;
                 }
                 
-                currentAngle += speed;
+                // 计算当前角度
+                currentAngle = randomAngle * easeProgress;
                 wheelInner.style.transform = `rotate(${currentAngle}deg)`;
                 
-                if (currentAngle < randomAngle) {
+                if (elapsed < totalDuration) {
                     requestAnimationFrame(animate);
                 } else {
                     // 停止转动
