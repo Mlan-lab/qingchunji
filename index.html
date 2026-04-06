@@ -2232,11 +2232,11 @@
             showMessage('数据导出成功！');
         }
         
-        function importData(input) {
+        async function importData(input) {
             const file = input.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
                     if (data.animes) {
@@ -2244,9 +2244,9 @@
                             animes = data.animes;
                             if (data.characters) {
                                 characters = data.characters;
-                                saveCharacters();
+                                await saveCharacters();
                             }
-                            saveAnimes();
+                            await saveAnimes();
                             renderAnimes();
                             showMessage('数据导入成功！');
                         }
@@ -2259,6 +2259,17 @@
             };
             reader.readAsText(file);
             input.value = '';
+        }
+        
+        async function clearData() {
+            if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+                animes = [];
+                characters = [];
+                await saveAnimes();
+                await saveCharacters();
+                renderAnimes();
+                showMessage('数据已清空');
+            }
         }
         
         // 主题切换
