@@ -1341,6 +1341,71 @@
         let currentCategory = 'all';
         let currentSort = 'score';
         
+        // 打开IndexedDB数据库
+        async function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('AnimeCollection', 1);
+                
+                request.onupgradeneeded = function(event) {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('animes')) {
+                        db.createObjectStore('animes', { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains('characters')) {
+                        db.createObjectStore('characters', { keyPath: 'id' });
+                    }
+                };
+                
+                request.onsuccess = function(event) {
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = function(event) {
+                    reject('数据库打开失败');
+                };
+            });
+        }
+        
+        // 从IndexedDB加载数据
+        async function loadData() {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const db = await openDB();
+                    const transaction = db.transaction('animes', 'readonly');
+                    const store = transaction.objectStore('animes');
+                    const request = store.getAll();
+                    
+                    request.onsuccess = function(event) {
+                        const loadedAnimes = event.target.result;
+                        if (loadedAnimes.length > 0) {
+                            animes = loadedAnimes;
+                        }
+                        updateStats();
+                        resolve();
+                    };
+                    
+                    request.onerror = function() {
+                        // 降级到localStorage
+                        const localAnimes = localStorage.getItem('animes');
+                        if (localAnimes) {
+                            animes = JSON.parse(localAnimes);
+                        }
+                        updateStats();
+                        resolve();
+                    };
+                } catch (error) {
+                    console.error('加载数据失败:', error);
+                    // 降级到localStorage
+                    const localAnimes = localStorage.getItem('animes');
+                    if (localAnimes) {
+                        animes = JSON.parse(localAnimes);
+                    }
+                    updateStats();
+                    resolve();
+                }
+            });
+        }
+        
         // 角色数据
         let characters = JSON.parse(localStorage.getItem('characters')) || [
             {
@@ -1819,6 +1884,13 @@
         async function saveAnimes() {
             return new Promise(async (resolve, reject) => {
                 try {
+                    // 确保每个动漫都有唯一的id
+                    animes.forEach(anime => {
+                        if (!anime.id) {
+                            anime.id = Date.now() + Math.floor(Math.random() * 1000);
+                        }
+                    });
+                    
                     const db = await openDB();
                     const transaction = db.transaction('animes', 'readwrite');
                     const store = transaction.objectStore('animes');
@@ -2068,7 +2140,7 @@
         });
         
         // 表单提交
-        document.getElementById('addAnimeForm').addEventListener('submit', function(e) {
+        document.getElementById('addAnimeForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const name = document.getElementById('animeName').value.trim();
@@ -2090,16 +2162,16 @@
             
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    saveAnimeData(name, category, e.target.result, score, description);
+                reader.onload = async function(e) {
+                    await saveAnimeData(name, category, e.target.result, score, description);
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                saveAnimeData(name, category, image, score, description);
+                await saveAnimeData(name, category, image, score, description);
             }
         });
         
-        function saveAnimeData(name, category, image, score, description) {
+        async function saveAnimeData(name, category, image, score, description) {
             const animeData = {
                 name,
                 category,
@@ -2124,7 +2196,7 @@
             
             document.getElementById('addAnimeForm').reset();
             document.getElementById('imagePreview').style.display = 'none';
-            saveAnimes();
+            await saveAnimes();
             renderAnimes();
         }
         
@@ -2273,6 +2345,7 @@
                             }
                             await saveAnimes();
                             renderAnimes();
+                            updateStats();
                             showMessage('数据导入成功！');
                         }
                     } else {
